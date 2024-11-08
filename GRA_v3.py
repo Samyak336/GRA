@@ -55,13 +55,15 @@ tf.flags.DEFINE_integer('image_resize', 331, 'Height of each input images.')
 tf.flags.DEFINE_string('checkpoint_path', './models',
                        'Path to checkpoint for pretained models.')
 
-tf.flags.DEFINE_string('input_dir', './dev_data/val_rs',
-                       'Input directory with images.')
-
-tf.flags.DEFINE_string('output_dir', './outputs/gra_v3',
-                       'Output directory with images.')
+tf.flags.DEFINE_string('input_dir', None, 'Input directory with images.')
+tf.flags.DEFINE_string('output_dir', None, 'Output directory with images.')
+tf.flags.DEFINE_float('eta', 0.94, 'Value for the eta parameter.')  # Set a default value
 
 FLAGS = tf.flags.FLAGS
+
+# Ensure directories are passed and not None
+if FLAGS.input_dir is None or FLAGS.output_dir is None:
+    raise ValueError("Both input_dir and output_dir must be specified.")
 
 np.random.seed(0)
 tf.set_random_seed(0)
@@ -191,8 +193,10 @@ def graph(x, y, i, x_max, x_min, grad, samgrad, m):
     noiselast = grad
     noise = momentum * grad + (current_grad) / tf.reduce_mean(tf.abs(current_grad), [1, 2, 3], keep_dims=True)
     eqm = tf.cast(tf.equal(tf.sign(noiselast), tf.sign(noise)), dtype = tf.float32)    
-    dim = tf.ones( x.shape ) - eqm       
-    m = m * ( eqm + dim * 0.94 )                          
+    dim = tf.ones( x.shape ) - eqm
+    # Use FLAGS.eta in the code where `eta` is defined:
+    eta = FLAGS.eta  # Use this in your 'graph' function or wherever `eta` is used
+    m = m * ( eqm + dim * eta )                          
     x = x + alpha * m * tf.sign(noise)
     x = tf.clip_by_value(x, x_min, x_max)
     i = tf.add(i, 1)
