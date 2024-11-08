@@ -11,7 +11,15 @@ from nets import inception_v3, inception_v4, inception_resnet_v2, resnet_v2
 
 slim = tf.contrib.slim
 
-checkpoint_path = './models'
+# Argument parsing
+parser = argparse.ArgumentParser(description='Evaluate attack success rate.')
+parser.add_argument('--input_dir', required=True, help='Directory for input images')
+parser.add_argument('--checkpoint_path', required=True, help='Directory to model checkpoints')
+parser.add_argument('--load_labels', type=float, required=True, help='val_rs labels')
+parser.add_argument('--output_dir', type=float, required=True, help='output')
+args = parser.parse_args()
+
+checkpoint_path = args.checkpoint_path
 model_checkpoint_map = {
     'inception_v3': os.path.join(checkpoint_path, 'inception_v3.ckpt'),
     'adv_inception_v3': os.path.join(checkpoint_path, 'adv_inception_v3_rename.ckpt'),
@@ -61,8 +69,8 @@ def load_images(input_dir, batch_shape):
 
 
 if __name__ == '__main__':
-    f2l = load_labels('./dev_data/val_rs.csv')
-    input_dir = './outputs' # 
+    f2l = load_labels(args.load_labels)
+    input_dir = args.input_dir 
     batch_shape = [50, 299, 299, 3]
     num_classes = 1001
     tf.logging.set_verbosity(tf.logging.INFO)
@@ -154,6 +162,19 @@ if __name__ == '__main__':
                         if l[i] != label:
                             success_count[i] += 1 
 
-            for i in range(len(model_name)): 
-                print("Attack Success Rate for {0} : {1:.1f}%".format(model_name[i], success_count[i] / 1000. * 100))
+            output_file_path = os.path.join(args.output_dir, 'attack_success_rate.txt')
+
+            # Open the file in write mode
+            with open(output_file_path, 'a') as output_file:
+                for i in range(len(model_name)):
+                    result = "Attack Success Rate for {0} : {1:.1f}%\n".format(model_name[i], success_count[i] / 1000. * 100)
+                    
+                    # Write the result to the file
+                    output_file.write(result)
+                    output_file.write("\n\n")
+                    
+                    # Optionally, print to console for confirmation
+                    # print(result)
+                    
+            print(f"Results saved to {output_file_path}")
 
