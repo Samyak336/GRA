@@ -7,6 +7,7 @@ import numpy as np
 import tensorflow as tf
 from imageio import imread
 import pandas as pd
+import argparse
 from nets import inception_v3, inception_v4, inception_resnet_v2, resnet_v2
 
 slim = tf.contrib.slim
