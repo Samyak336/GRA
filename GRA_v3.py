@@ -56,7 +56,6 @@ tf.flags.DEFINE_string('checkpoint_path', './models','Path to checkpoint for pre
 
 tf.flags.DEFINE_string('input_dir', None, 'Input directory with images.')
 tf.flags.DEFINE_string('output_dir', None, 'Output directory with images.')
-tf.flags.DEFINE_string('labels_path', None, 'input csv')
 tf.flags.DEFINE_float('eta', 0.94, 'Value for the eta parameter.')  # Set a default value
 
 FLAGS = tf.flags.FLAGS
@@ -245,7 +244,7 @@ def main(_):
     # Images for inception classifier are normalized to be in [-1, 1] interval,
     # eps is a difference between pixels so it should be in [0, 2] interval.
     # Renormalizing epsilon from [0, 255] to [0, 2].
-    f2l = load_labels(FLAGS.labels_path)
+    f2l = load_labels('/kaggle/input/dev-data/dev_data/val_rs.csv')
     eps = 2 * FLAGS.max_epsilon / 255.0
 
     batch_shape = [FLAGS.batch_size, FLAGS.image_height, FLAGS.image_width, 3]
