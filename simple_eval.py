@@ -16,7 +16,8 @@ slim = tf.contrib.slim
 parser = argparse.ArgumentParser(description='Evaluate attack success rate.')
 parser.add_argument('--input_dir', required=True, help='Directory for input images')
 parser.add_argument('--checkpoint_path', required=True, help='Directory to model checkpoints')
-parser.add_argument('--output_dir', type=float, required=True, help='output')
+parser.add_argument('--output_dir', required=True, help='output')
+parser.add_argument('--labels_path', required=True, help='output')
 args = parser.parse_args()
 
 checkpoint_path = args.checkpoint_path
@@ -69,7 +70,7 @@ def load_images(input_dir, batch_shape):
 
 
 if __name__ == '__main__':
-    f2l = load_labels('/kaggle/input/dev-data/dev_data/val_rs.csv')
+    f2l = load_labels(args.labels_path)
     input_dir = args.input_dir 
     batch_shape = [50, 299, 299, 3]
     num_classes = 1001
