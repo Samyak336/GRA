@@ -190,7 +190,6 @@ def graph(x, y, i, x_max, x_min, grad, samgrad, m):
     gamma = FLAGS.gamma
     high_thresh = FLAGS.high_thresh
     low_thresh = FLAGS.low_thresh
-    alpha = adjust_alpha_tensor(tf.reduce_mean(cossim), eps / num_iter, gamma, high_thresh, low_thresh)
 ###########
     momentum = FLAGS.momentum
     num_classes = 1001
@@ -215,7 +214,9 @@ def graph(x, y, i, x_max, x_min, grad, samgrad, m):
     cossim = tf.expand_dims(cossim, -1)
     # cossim=tf.maximum(low,cossim)
     current_grad = cossim*new_grad + (1-cossim)*samgrad  
-    
+############
+    alpha = adjust_alpha_tensor(tf.reduce_mean(cossim), eps / num_iter, gamma, high_thresh, low_thresh)
+############
     noiselast = grad
     noise = momentum * grad + (current_grad) / tf.reduce_mean(tf.abs(current_grad), [1, 2, 3], keep_dims=True)
     eqm = tf.cast(tf.equal(tf.sign(noiselast), tf.sign(noise)), dtype = tf.float32)    
