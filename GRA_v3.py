@@ -174,7 +174,7 @@ def adjust_alpha_tensor(cos_sim, alpha, gamma, high_thresh, low_thresh):
         mean_sim > high_thresh,
         lambda: 1 - gamma,  # Decrease alpha
         lambda: tf.cond(
-            mean_sim < 0.25low_thresh,
+            mean_sim < low_thresh,
             lambda: 1 + gamma,  # Increase alpha
             lambda: 1.0         # No change
         )
