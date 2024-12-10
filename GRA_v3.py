@@ -162,10 +162,29 @@ def batch_grad(x, one_hot, i, max_iter, alpha, grad):
     return x, one_hot, i, max_iter, alpha, grad
 
 
+#############
+def adjust_alpha_tensor(cos_sim, alpha, gamma=0.01):
+    """Dynamically adjusts alpha based on the cosine similarity."""
+    mean_sim = tf.reduce_mean(cos_sim)
+    adjustment_factor = tf.cond(
+        mean_sim > 0.75,
+        lambda: 1 - gamma,  # Decrease alpha
+        lambda: tf.cond(
+            mean_sim < 0.25,
+            lambda: 1 + gamma,  # Increase alpha
+            lambda: 1.0         # No change
+        )
+    )
+    return alpha * adjustment_factor
+##############
+
+
 def graph(x, y, i, x_max, x_min, grad, samgrad, m): 
     eps = 2.0 * FLAGS.max_epsilon / 255.0
     num_iter = FLAGS.num_iter
-    alpha = eps / num_iter
+    ###########
+    alpha = adjust_alpha_tensor(tf.reduce_mean(cossim), eps / num_iter, gamma=0.01)
+    ###########
     momentum = FLAGS.momentum
     num_classes = 1001
     with slim.arg_scope(inception_v3.inception_v3_arg_scope()):
