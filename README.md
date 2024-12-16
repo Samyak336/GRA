@@ -50,7 +50,7 @@ You should download the [data](https://drive.google.com/drive/folders/1CfobY6i8B
 
 #### Runing attack
 
-Taking GRA attack for example, you can run this attack as following: 
+Taking GRA attack for example, you can run this attack as following: (for all the ablations the code is provided in GRA in comments form)
 In colab you do not have to add anything after GRA code path, and in kaggle please add the rest of the things along with the path to them as per saved in kaggle datasets and models.
 ```
 ! source activate my_env && python3 /path/to/GRA_v3.py --checkpoint_path $checkpoint_path --input_dir $input_dir --output_dir $output_dir --labels_path $labels_path
