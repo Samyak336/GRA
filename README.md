@@ -10,7 +10,8 @@
 + pandas =  1.1.1
 + imageio = 2.8.0
 
-##Setup for requirements in Colab/Kaggle
+## Setup for requirements in Colab/Kaggle
+
 Install Miniconda in Colab/Kaggle
 ```
 !wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
