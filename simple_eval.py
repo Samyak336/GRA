@@ -10,8 +10,12 @@ import pandas as pd
 from nets import inception_v3, inception_v4, inception_resnet_v2, resnet_v2
 
 slim = tf.contrib.slim
+tf.flags.DEFINE_string('checkpoint_path', './models','Path to checkpoint for pretained models.')
+tf.flags.DEFINE_string('input_dir', './outputs/gra_v3','Input directory with images.')
+tf.flags.DEFINE_string('labels_path','./dev_data/val_rs.csv', 'input csv')
+FLAGS = tf.flags.FLAGS
 
-checkpoint_path = '/kaggle/input/okokokok/tensorflow1/default/1/models'
+checkpoint_path = 'FLAGS.checkpoint_path'
 model_checkpoint_map = {
     'inception_v3': os.path.join(checkpoint_path, 'inception_v3.ckpt'),
     'adv_inception_v3': os.path.join(checkpoint_path, 'adv_inception_v3_rename.ckpt'),
@@ -61,8 +65,8 @@ def load_images(input_dir, batch_shape):
 
 
 if __name__ == '__main__':
-    f2l = load_labels('/kaggle/input/dev-data/dev_data/val_rs.csv')
-    input_dir = '/kaggle/working/GRA/outputs/output_eta_0.5' # 
+    f2l = load_labels('FLAGS.labels_path')
+    input_dir = 'FLAGS.input_dir' # 
     batch_shape = [50, 299, 299, 3]
     num_classes = 1001
     tf.logging.set_verbosity(tf.logging.INFO)
