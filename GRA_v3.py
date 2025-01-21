@@ -166,32 +166,32 @@ def batch_grad(x, one_hot, i, max_iter, alpha, grad):
     return x, one_hot, i, max_iter, alpha, grad
 
 
-############# ( Use this code for dynamic alpha ablation)
-# def adjust_alpha_tensor(cos_sim, alpha, gamma, high_thresh, low_thresh):
-#     """Dynamically adjusts alpha based on the cosine similarity."""
-#     mean_sim = tf.reduce_mean(cos_sim)
-#     adjustment_factor = tf.cond(
-#         mean_sim > high_thresh,
-#         lambda: 1 - gamma,  # Decrease alpha
-#         lambda: tf.cond(
-#             mean_sim < low_thresh,
-#             lambda: 1 + gamma,  # Increase alpha
-#             lambda: 1.0         # No change
-#         )
-#     )
-#     return alpha * adjustment_factor
-##############
+############ ( Use this code for dynamic alpha ablation)
+def adjust_alpha_tensor(cos_sim, alpha, gamma, high_thresh, low_thresh):
+    """Dynamically adjusts alpha based on the cosine similarity."""
+    mean_sim = tf.reduce_mean(cos_sim)
+    adjustment_factor = tf.cond(
+        mean_sim > high_thresh,
+        lambda: 1 + gamma,  # Increase alpha
+        lambda: tf.cond(
+            mean_sim < low_thresh,
+            lambda: 1 - gamma,  # Decrease alpha
+            lambda: 1.0         # No change
+        )
+    )
+    return alpha * adjustment_factor
+#############
 
 
 def graph(x, y, i, x_max, x_min, grad, samgrad, m): 
     eps = 2.0 * FLAGS.max_epsilon / 255.0
     num_iter = FLAGS.num_iter
     alpha= eps / num_iter
-###########( Use this code for dynamic alpha ablation)
-    # gamma = FLAGS.gamma
-    # high_thresh = FLAGS.high_thresh
-    # low_thresh = FLAGS.low_thresh
-###########
+##########( Use this code for dynamic alpha ablation)
+    gamma = FLAGS.gamma
+    high_thresh = FLAGS.high_thresh
+    low_thresh = FLAGS.low_thresh
+##########
     momentum = FLAGS.momentum
     num_classes = 1001
     with slim.arg_scope(inception_v3.inception_v3_arg_scope()):
@@ -218,9 +218,9 @@ def graph(x, y, i, x_max, x_min, grad, samgrad, m):
     cossim = tf.expand_dims(cossim, -1)
     # cossim=tf.maximum(low,cossim)
     current_grad = cossim*new_grad + (1-cossim)*samgrad  
-############ ( Use this code for dynamic alpha ablation)
-    # alpha = adjust_alpha_tensor(tf.reduce_mean(cossim), eps / num_iter, gamma, high_thresh, low_thresh)
-############
+########### ( Use this code for dynamic alpha ablation)
+    alpha = adjust_alpha_tensor(tf.reduce_mean(cossim), eps / num_iter, gamma, high_thresh, low_thresh)
+###########
     noiselast = grad
     noise = momentum * grad + (current_grad) / tf.reduce_mean(tf.abs(current_grad), [1, 2, 3], keep_dims=True)
     eqm = tf.cast(tf.equal(tf.sign(noiselast), tf.sign(noise)), dtype = tf.float32)    
