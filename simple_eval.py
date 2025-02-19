@@ -15,7 +15,7 @@ tf.flags.DEFINE_string('input_dir', './outputs/gra_v3','Input directory with ima
 tf.flags.DEFINE_string('labels_path','./dev_data/val_rs.csv', 'input csv')
 FLAGS = tf.flags.FLAGS
 
-checkpoint_path = 'FLAGS.checkpoint_path'
+checkpoint_path = FLAGS.checkpoint_path
 model_checkpoint_map = {
     'inception_v3': os.path.join(checkpoint_path, 'inception_v3.ckpt'),
     'adv_inception_v3': os.path.join(checkpoint_path, 'adv_inception_v3_rename.ckpt'),
