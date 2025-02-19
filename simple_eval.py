@@ -65,8 +65,8 @@ def load_images(input_dir, batch_shape):
 
 
 if __name__ == '__main__':
-    f2l = load_labels('FLAGS.labels_path')
-    input_dir = 'FLAGS.input_dir' # 
+    f2l = load_labels(FLAGS.labels_path)
+    input_dir = FLAGS.input_dir 
     batch_shape = [50, 299, 299, 3]
     num_classes = 1001
     tf.logging.set_verbosity(tf.logging.INFO)
